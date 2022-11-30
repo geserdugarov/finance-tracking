@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 
 def convert(data: pd.DataFrame, fromcur: str, tocur: str, skiplist: list) -> pd.DataFrame:
@@ -13,13 +12,14 @@ def convert(data: pd.DataFrame, fromcur: str, tocur: str, skiplist: list) -> pd.
 
     return data_conv
 
+
 def _collect_courses(data: pd.DataFrame, fromcur: str, tocur: str, skiplist: list) -> pd.DataFrame:
     transfers = data.loc[data['Type'] == 'Transfer']
     tf = transfers.loc[transfers['Currency'] == fromcur]
     tf = tf.loc[~tf['Name'].isin(skiplist)]
     tf_ids = tf.index
 
-    # collect all transfers from fromcurr to tocurr
+    # find pairs of transfers
     cources = pd.DataFrame({'Date': [], 'Course': []})
     for i in tf_ids:
         if i-1 in transfers.index:
