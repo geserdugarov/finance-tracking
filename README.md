@@ -1,8 +1,8 @@
-### finance-tracking
+# finance-tracking
 
 Utility for analysis of personal finance flows.
 
-#####Input
+### Input
 
 Structured csv-file of transactions with data:
 
@@ -13,6 +13,6 @@ Structured csv-file of transactions with data:
 * Currency - used currency
 * Name - optional short description
 
-##### Output
+### Output
 
 xslx-file with income and expense analysis.
