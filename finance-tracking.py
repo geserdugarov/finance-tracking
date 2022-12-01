@@ -60,5 +60,7 @@ print("ok")
 
 print("Plotting data -", end=' ')
 # add income and expense dynamics with averaging in certain window
+# add DataFrame to balance
+# setting to plot function by dictionary
 print("ok")
 
