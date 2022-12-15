@@ -1,6 +1,6 @@
-INITIAL_DATA:
+DATA:
   FOLDER: data
-  FILE: exportXLS.xls
+  FILE_PATTERN: exportXLS
 
 
 EXPORT:

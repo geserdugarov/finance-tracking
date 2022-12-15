@@ -21,7 +21,7 @@ class Balance:
         mindate: string with minimum of date range
         maxdate: string with maximum of date range
         """
-        max_date = pd.to_datetime(str(maxdate.year) + '-' + str(maxdate.month + 1) + '-1')
+        max_date = pd.to_datetime(maxdate) + pd.DateOffset(months=1)
         ind = pd.date_range(start=mindate, end=max_date, freq='M').to_period('M')
         self.df = pd.DataFrame([[0 for cat in catlist] for month in ind], index=ind, columns=catlist)
         logger.debug("Month periods were initialized and set as index.")

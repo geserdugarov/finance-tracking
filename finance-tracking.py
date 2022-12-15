@@ -13,14 +13,9 @@ with open(config_dir.joinpath('config.yaml'), 'r', encoding='utf-8') as config_f
 
 
 if __name__ == '__main__':
-    pathtocsv = os.path.join(pathlib.Path(__file__).parent,
-                             config['INITIAL_DATA']['FOLDER'], config['INITIAL_DATA']['FILE'])
-    try:
-        df = pd.read_excel(pathtocsv, engine='xlrd')
-    except:
-        logging.error("csv file importing failed.")
-        exit(1)
-    df = df.drop(['Description'], axis=1)  # no information in Description column
+    filepath = processing.load.find_file(data_folder=os.path.join(config_dir, config['DATA']['FOLDER']),
+                                         file_key=config['DATA']['FILE_PATTERN'])
+    df = processing.load.from_csv(pathtocsv=filepath)
     logging.info("Source data loading - finished.")
 
     min_date_df = df['Date'].min()
@@ -32,11 +27,6 @@ if __name__ == '__main__':
     df_conv = processing.currency.convert(df_conv, fromcur='KZT', tocur='RUB', skiplist=skip_list)
     logging.info("Currencies conversion from KZT to RUB - finished.")
 
-    wallet = processing.Wallet(accounts=list(set(df_conv['Account'])),
-                               mindate=df_conv['Date'].min(), maxdate=df_conv['Date'].max())
-    wallet.load_data(df_conv)
-    logging.info("Wallet dynamics processed - finished.")
-
     inc_cat = list(set(df_conv.loc[df_conv['Type'] == 'Income', 'Category']))
     income = processing.Balance(catlist=inc_cat, mindate=min_date_df, maxdate=max_date_df)
     income.load_data(df_conv, typekey='Income')
@@ -47,20 +37,21 @@ if __name__ == '__main__':
     expense.load_data(df_conv, typekey='Expense')
     logging.info("Expense analysis by categories - finished.")
 
-    export_file = os.path.join(pathlib.Path(__file__).parent, config['EXPORT']['FOLDER'], config['EXPORT']['FILE'])
-    inc_export = processing.Export(income.df)
-    inc_export.use_template_sort(config['EXPORT']['INCOME_TEMPLATE'], precision=0)
+    file_export = os.path.join(pathlib.Path(__file__).parent, config['EXPORT']['FOLDER'], config['EXPORT']['FILE'])
+    inc_export = processing.export.sort_by_template(data=income.df, template=config['EXPORT']['INCOME_TEMPLATE'])
     logging.debug("Income data for export prepared.")
-
-    exp_export = processing.Export(expense.df)
-    exp_export.use_template_sort(config['EXPORT']['EXPENSE_TEMPLATE'], multiply=-1., precision=0)
+    exp_export = processing.export.sort_by_template(data=expense.df, template=config['EXPORT']['EXPENSE_TEMPLATE'])
     logging.debug("Expense data for export prepared.")
 
-    with pd.ExcelWriter(export_file) as writer:
-        inc_export.df.to_excel(writer, sheet_name='Income')
-        exp_export.df.to_excel(writer, sheet_name='Expense')
+    with pd.ExcelWriter(file_export) as writer:
+        round(inc_export, 0).to_excel(writer, sheet_name='Income')
+        round(-exp_export, 0).to_excel(writer, sheet_name='Expense')
     logging.info("Export to xsls - finished.")
 
+    wallet = processing.Wallet(accounts=list(set(df_conv['Account'])),
+                               mindate=df_conv['Date'].min(), maxdate=df_conv['Date'].max())
+    wallet.load_data(df_conv)
+    logging.info("Wallet dynamics processed - finished.")
 
     # logging.info("Plotting data - started")
     # add income and expense dynamics with averaging in certain window

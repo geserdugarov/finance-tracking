@@ -17,6 +17,10 @@ def convert(data: pd.DataFrame, fromcur: str, tocur: str, skiplist: List[str]) -
     fromcur:  currency, that should be converted
     tocur:    currency, to which transactions should be converted
     skiplist: list of transaction names, which should be skipped
+
+    Return
+    ----------
+    Converted data with similar structure with 'data'.
     """
     data_conv = data.copy(deep=True)
     logger.debug("Transactions copied for conversion.")
@@ -42,6 +46,10 @@ def _collect_courses(data: pd.DataFrame, fromcur: str, tocur: str, skiplist: lis
     fromcur:  currency, that should be converted
     tocur:    currency, to which transactions should be converted
     skiplist: list of transaction names, which should be skipped
+
+    Return
+    ----------
+    Courses of exchange from transactions in the format of pd.DataFrame.
     """
     transfers = data.loc[data['Type'] == 'Transfer']
     tf = transfers.loc[transfers['Currency'] == fromcur]

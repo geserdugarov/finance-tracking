@@ -15,10 +15,7 @@ LOGGING_CONFIG = {
 
     'loggers': {
         '': {'handlers': ['stream_handler'], 'level': 'INFO', 'propagate': True},
-        'processing.balance':  {'handlers': ['stream_handler'], 'level': 'INFO', 'propagate': False},
-        'processing.currency': {'handlers': ['stream_handler'], 'level': 'INFO', 'propagate': False},
-        'processing.export':   {'handlers': ['stream_handler'], 'level': 'INFO', 'propagate': False},
-        'processing.wallet':   {'handlers': ['stream_handler'], 'level': 'INFO', 'propagate': False}
+        'processing':     {'handlers': ['stream_handler'], 'level': 'INFO', 'propagate': False}
     }
 }
 
